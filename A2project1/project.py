@@ -3,20 +3,17 @@
 # -   Winter Project   -
 # -    Casino Games    -
 # -     Black Jack     -
-# -   by Rex & Kevin   -
+# -       by Rex       -
 # -                    -
 # ----------------------
 
 #  Spade - S / Heart - H / Club - C / Diamond -D
 
 import random
+import pygame
+import sys
+from pygame.locals import *
 
-def c(s):
-    if len(s) == 0:
-        return 0
-    if s[len(s)-1] == 'A':
-        return s
-    
 
 class Card(object):
 
@@ -52,11 +49,11 @@ class CardSet(object):
             else:
                 Sum = Sum + int(c.name);
         if Sum <= 11 and Flag == 1:
-            print(Sum, Sum + 10)
-            return Sum, Sum + 10
+            print(Sum,' or ',Sum + 10)
+            return [Sum + 10, Sum]
         else:
             print(Sum)
-            return Sum
+            return [Sum]
 
     def checkblackjack(self):
         if len(self.data) == 2:
@@ -91,26 +88,50 @@ def InitializeCardDeck():
         L = DeleteElement(L,i);
     return RL
 
+def main():
+    CD = InitializeCardDeck(); # Card Deck
+    a = CardSet();
+    while True:
+        ins = input('d for draw : ');
+        if ins == 'd':
+            c = CD.pop()
+            a.draw(c);
+            print(a)
+        else:
+            print('quit')
+            break
+        if a.count()[0] > 21: 
+            print('bomb')
+            break
 
+BackgroundImageFilename = 'Board.png';
+CardDeckImageFilename = 'Cards.png';
 
-CD = InitializeCardDeck(); # Card Deck
-a = CardSet();
+pygame.init()
+
+pygame.display.set_caption('blackjack');
+
+Screen = pygame.display.set_mode((600,600),0,32);
+
+Background = pygame.image.load(BackgroundImageFilename).convert();
+CardDeck = pygame.image.load(CardDeckImageFilename).convert();
+
+a = {}
+a["('S','A')"] = CardDeck;
+
+Clock = pygame.time.Clock();
+
 while True:
-    ins = input('d for draw : ');
-    if ins == 'd':
-        c = CD.pop()
-        a.draw(c);
-        print(a)
-    else:
-        print('quit')
-        break
-    if a.count() > 21:
-        print('bomb')
-        break
-    
-
-    
-
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            quit();
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                pygame.quit();
+                sys.exit();
+    Screen.blit(Background,(0,0));
+    Clock.tick(20);
+    pygame.display.update();
 
 
 
