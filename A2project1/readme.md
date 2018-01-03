@@ -17,5 +17,14 @@ Plan 5 | The dancing flower | unknown | x
 #### casino Game
 #### we will first design 'Black Jack' in the holiday
 
+### 3.
+### Finished A Black Jack Game
+
+### 4.
+### Functions
+#### a dealer and a player
+#### graphic representation of Cards and Boards
+#### you can win money
+
 ###### if someone wants to access to Kevin's repository:
 ###### https://github.com/KevinYoung23
