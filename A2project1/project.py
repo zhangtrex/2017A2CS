@@ -15,7 +15,9 @@ import sys
 from pygame.locals import *
 from GameObjects import *
 
-def DeleteElement(List, Index):
+# odules
+
+def DeleteElement(List, Index): # use index in a list to remove the element
     List2 = [];
     for i in range(len(List)-1):
         if i < Index:
@@ -39,9 +41,7 @@ def InitializeCardDeck():
         L = DeleteElement(L,i);
     return RL
 
-# 
-#
-# pygame modules
+# pygame module
 
 def InitializeCardDeckImage():
     CardDeckImageFilename = 'Cards.png';
@@ -85,10 +85,11 @@ Hit = Font1.render('Hit',False,(0,0,0));
 Stand = Font1.render('Stand',False,(0,0,0));
 Quit = Font1.render('Quit',False,(0,0,0));
 Game = Font1.render('Game',False,(0,0,0));
-Bust = Font2.render('Bust',False,(0,0,0));
-Win = Font2.render('win',False,(0,0,0));
-Loss = Font2.render('loss',False,(0,0,0));
-Draw = Font2.render('draw',False,(0,0,0));
+Bust = Font2.render('Bust',False,(255,0,0));
+Win = Font2.render('win',False,(255,0,0));
+Loss = Font2.render('loss',False,(255,0,0));
+Draw = Font2.render('draw',False,(255,0,0));
+BlackJack = Font2.render('Black Jack !',False,(255,0,0));
 Hint1 = Font2.render('Press Mouse to Start Another Game',False,(0,0,0));
 
 CardImage = InitializeCardDeckImage();
@@ -98,7 +99,7 @@ Clock = pygame.time.Clock();
 ChooseFlag = 0;
 # 0 for nothing, 1 for upper button pressed, 2 for lower button pressed
 StateFlag = 0; # 0 for startgame, 1 for in game, 2 for dealer, 3 for win,
-#4 for draw, 5 for loss, 6 for bust
+#4 for draw, 5 for loss, 6 for bust, 7 for blackjack
 PressMouseCount = 0;
 DealerCount = 0;
 Money = 1000;
@@ -147,6 +148,15 @@ while True:
         StateFlag = 0;
         ChooseFlag = 0;
         Money = Money - 10;
+    elif PressMouse[0] and StateFlag == 7 and PressMouseCount == 1:
+        StateFlag = 0;
+        ChooseFlag = 0;
+        Money = Money + 20;
+    elif PressMouse[0] and StateFlag == 8 and PressMouseCount == 1:
+        StateFlag = 0;
+        ChooseFlag = 0;
+        Money = Money - 20;
+        
 
     if ChooseFlag == 2 and StateFlag == 0:
         ChooseFlag == 0;
@@ -171,6 +181,20 @@ while True:
     elif ChooseFlag == 2 and StateFlag == 1:
         StateFlag = 2;
         ChooseFlag = 0;
+
+    # Other Condition;
+    if StateFlag == 1:
+        if CS.checkblackjack() == True:
+            if DCS.checkblackjack() == True:
+                StateFlag = 4;
+            else:
+                StateFlag = 7;
+        elif DCS.checkblackjack() == True:
+            StateFlag = 8;
+        if CS.count() > 21:
+            StateFlag = 6;
+        elif len(CS.data) >= 5:
+            StateFlag = 2;
     elif StateFlag == 2:
         DealerCount = DealerCount + 1;
         if DealerCount >= 20:
@@ -187,14 +211,6 @@ while True:
                     StateFlag = 4;
                 else:
                     StateFlag = 3;
-
-    # Other Condition;
-    if StateFlag == 1:
-        if CS.count() > 21:
-            StateFlag = 6;
-    if StateFlag == 1 and len(CS.data) >= 5:
-        StateFlag = 2;
-    
         
     MoneyImage = Font2.render('$'+str(Money),False,(0,0,0))
 
@@ -249,7 +265,7 @@ while True:
             Screen.blit(CardI,(180+100*i,100));
         Screen.blit(Hint1,(100,200));
         Screen.blit(Loss,(350,100));
-    if StateFlag == 6:
+    elif StateFlag == 6:
         for i in range(len(CS.data)):
             CardI = CardImage[CS.data[i].hashfunction()];
             Screen.blit(CardI,(180+100*i,350));
@@ -258,15 +274,27 @@ while True:
             Screen.blit(CardI,(180+100*i,100));
         Screen.blit(Bust,(350,100));
         Screen.blit(Hint1,(100,200));
+    elif StateFlag == 7:
+        for i in range(len(CS.data)):
+            CardI = CardImage[CS.data[i].hashfunction()];
+            Screen.blit(CardI,(180+100*i,350));
+        for i in range(len(DCS.data)):
+            CardI = CardImage[DCS.data[i].hashfunction()];
+            Screen.blit(CardI,(180+100*i,100));
+        Screen.blit(BlackJack,(350,100));
+        Screen.blit(Hint1,(100,200));
+    elif StateFlag == 8:
+        for i in range(len(CS.data)):
+            CardI = CardImage[CS.data[i].hashfunction()];
+            Screen.blit(CardI,(180+100*i,350));
+        for i in range(len(DCS.data)):
+            CardI = CardImage[DCS.data[i].hashfunction()];
+            Screen.blit(CardI,(180+100*i,100));
+        Screen.blit(Loss,(350,100));
+        Screen.blit(Hint1,(100,200));
 
     Screen.blit(MoneyImage,(700,30));
 
-        
-        
     Clock.tick(20);
+
     pygame.display.update();
-
-
-
-
-    

@@ -26,5 +26,40 @@ Plan 5 | The dancing flower | unknown | x
 #### graphic representation of Cards and Boards
 #### you can win money
 
+### 3.
+### Codes
+### classes and functions
+```python
+
+class Card():
+
+    def __init__():
+
+    def __repr__():
+
+    def __str__():
+
+    def hashfunction():
+
+class CardSet():
+
+    def __init__():
+
+    def __repr__():
+
+    def draw(): # add a card in the card set
+
+    def count(): # count the sum of the cards (in BlackJack)
+
+    def checkblackjack():
+
+def DeleteElement(List,Index):
+
+def InitializeCardDeck(): # initialize and shuffle the card deck
+
+def InitializeCardDeckImage(): # return a dictionary with all images of cards
+
+```
+
 ###### if someone wants to access to Kevin's repository:
 ###### https://github.com/KevinYoung23
