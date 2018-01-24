@@ -85,12 +85,12 @@ Hit = Font1.render('Hit',False,(0,0,0));
 Stand = Font1.render('Stand',False,(0,0,0));
 Quit = Font1.render('Quit',False,(0,0,0));
 Game = Font1.render('Game',False,(0,0,0));
-Bust = Font2.render('Bust',False,(255,0,0));
-Win = Font2.render('win',False,(255,0,0));
-Loss = Font2.render('loss',False,(255,0,0));
-Draw = Font2.render('draw',False,(255,0,0));
+Bust = Font2.render('You Bust',False,(255,0,0));
+Win = Font2.render('You win',False,(255,0,0));
+Loss = Font2.render('You loss',False,(255,0,0));
+Draw = Font2.render("It's a draw",False,(255,0,0));
 BlackJack = Font2.render('Black Jack !',False,(255,0,0));
-Hint1 = Font2.render('Press Mouse to Start Another Game',False,(0,0,0));
+Hint1 = Font2.render('Press Mouse to Start Another Game',True,(0,0,0));
 
 CardImage = InitializeCardDeckImage();
 
@@ -98,11 +98,14 @@ Clock = pygame.time.Clock();
 
 ChooseFlag = 0;
 # 0 for nothing, 1 for upper button pressed, 2 for lower button pressed
-StateFlag = 0; # 0 for startgame, 1 for in game, 2 for dealer, 3 for win,
-#4 for draw, 5 for loss, 6 for bust, 7 for blackjack
-PressMouseCount = 0;
+# 3 for $10, 4 for $50, 5 for $100
+StateFlag = 0;
+# 0 for startgame, 1 for in game, 2 for dealer, 3 for win,
+# 4 for draw, 5 for loss, 6 for bust, 7 for blackjack
+PressMouseCount = 0; # 0 for LeftKeyofMouse is not pressed, 1 for pressed
 DealerCount = 0;
 Money = 1000;
+Bet = 10;
 
 CD = InitializeCardDeck();
 
@@ -123,40 +126,48 @@ while True:
     x, y = pygame.mouse.get_pos();
     PressKey = pygame.key.get_pressed();
     PressMouse = pygame.mouse.get_pressed();
+    xposi = Font2.render('x: '+str(x),False,(0,0,0));
+    yposi = Font2.render('y: '+str(y),False,(0,0,0));
+
+    Screen.blit(xposi,(20,20));
+    Screen.blit(yposi,(20,70));
 
     if PressMouse[0]:
         PressMouseCount = PressMouseCount + 1;
     else:
         PressMouseCount = 0;
-        
+
+    
     if PressMouse[0] and 5 <= x <= 77 and 512 <= y <= 548 and PressMouseCount == 1:
         ChooseFlag = 1;
     elif PressMouse[0] and 5 <= x <= 77 and 560 <= y <= 596 and PressMouseCount == 1:
         ChooseFlag = 2;
+    elif PressMouse[0] and 755 <= x <= 794 and 511 <= y <= 550 and PressMouseCount == 1:
+        ChooseFlag = 3;
+    elif PressMouse[0] and 755 <= x <= 794 and 556 <= y <= 595 and PressMouseCount == 1:
+        ChooseFlag = 4;
+    elif PressMouse[0] and 690 <= x <= 749 and 556<= y <= 595 and PressMouseCount == 1:
+        ChooseFlag = 5;
+    
     if PressMouse[0] and StateFlag == 3 and PressMouseCount == 1:
         StateFlag = 0;
         ChooseFlag = 0;
-        Money = Money + 10;
+        Money = Money + Bet;
     elif PressMouse[0] and StateFlag == 4 and PressMouseCount == 1:
         StateFlag = 0;
         ChooseFlag = 0;
     elif PressMouse[0] and StateFlag == 5 and PressMouseCount == 1:
         StateFlag = 0;
         ChooseFlag = 0;
-        Money = Money - 10;
+        Money = Money - Bet;
     elif PressMouse[0] and StateFlag == 6 and PressMouseCount == 1:
         StateFlag = 0;
         ChooseFlag = 0;
-        Money = Money - 10;
+        Money = Money - Bet;
     elif PressMouse[0] and StateFlag == 7 and PressMouseCount == 1:
         StateFlag = 0;
         ChooseFlag = 0;
-        Money = Money + 20;
-    elif PressMouse[0] and StateFlag == 8 and PressMouseCount == 1:
-        StateFlag = 0;
-        ChooseFlag = 0;
-        Money = Money - 20;
-        
+        Money = Money + 2 * Bet;
 
     if ChooseFlag == 2 and StateFlag == 0:
         ChooseFlag == 0;
@@ -181,6 +192,15 @@ while True:
     elif ChooseFlag == 2 and StateFlag == 1:
         StateFlag = 2;
         ChooseFlag = 0;
+    elif ChooseFlag == 3 and StateFlag == 0:
+        Bet = 10;
+        ChooseFlag = 0;
+    elif ChooseFlag == 4 and StateFlag == 0:
+        Bet = 50;
+        ChooseFlag = 0;
+    elif ChooseFlag == 5 and StateFlag == 0:
+        Bet = 100;
+        ChooseFlag = 0;
 
     # Other Condition;
     if StateFlag == 1:
@@ -190,7 +210,7 @@ while True:
             else:
                 StateFlag = 7;
         elif DCS.checkblackjack() == True:
-            StateFlag = 8;
+            StateFlag = 5;
         if CS.count() > 21:
             StateFlag = 6;
         elif len(CS.data) >= 5:
@@ -212,7 +232,9 @@ while True:
                 else:
                     StateFlag = 3;
         
-    MoneyImage = Font2.render('$'+str(Money),False,(0,0,0))
+    MoneyImage = Font2.render('$'+str(Money),False,(0,0,0));
+    BetImage = Font2.render('$'+str(Bet),False,(0,0,0));
+    
 
     # screen
     if StateFlag == 0:
@@ -221,79 +243,72 @@ while True:
     if StateFlag == 1:
         for i in range(len(CS.data)):
             CardI = CardImage[CS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,350));
+            Screen.blit(CardI,(180+80*i,350));
         CardBackI = CardImage['Back'];
         Screen.blit(CardBackI,(180,100));
         for i in range(1,len(DCS.data),1):
             CardI = CardImage[DCS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,100));
+            Screen.blit(CardI,(180+80*i,100));
         Screen.blit(Hit,(31,519));
         Screen.blit(Stand,(18,567));
     elif StateFlag == 2:
         for i in range(len(CS.data)):
             CardI = CardImage[CS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,350));
+            Screen.blit(CardI,(180+80*i,350));
         CardBackI = CardImage['Back'];
         Screen.blit(CardBackI,(180,100));
         for i in range(1,len(DCS.data),1):
             CardI = CardImage[DCS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,100));
+            Screen.blit(CardI,(180+80*i,100));
     elif StateFlag == 3:
         for i in range(len(CS.data)):
             CardI = CardImage[CS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,350));
+            Screen.blit(CardI,(180+80*i,350));
         for i in range(len(DCS.data)):
             CardI = CardImage[DCS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,100));
-        Screen.blit(Hint1,(100,200));
-        Screen.blit(Win,(350,100));
+            Screen.blit(CardI,(180+80*i,100));
+        Screen.blit(Win,(330,270));
+        Screen.blit(Hint1,(150,200));
     elif StateFlag == 4:
         for i in range(len(CS.data)):
             CardI = CardImage[CS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,350));
+            Screen.blit(CardI,(180+80*i,350));
         for i in range(len(DCS.data)):
             CardI = CardImage[DCS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,100));
-        Screen.blit(Hint1,(100,200));
-        Screen.blit(Draw,(350,100));    
+            Screen.blit(CardI,(180+80*i,100));
+        Screen.blit(Draw,(330,270));    
+        Screen.blit(Hint1,(150,200));
     elif StateFlag == 5:
         for i in range(len(CS.data)):
             CardI = CardImage[CS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,350));
+            Screen.blit(CardI,(180+80*i,350));
         for i in range(len(DCS.data)):
             CardI = CardImage[DCS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,100));
-        Screen.blit(Hint1,(100,200));
-        Screen.blit(Loss,(350,100));
+            Screen.blit(CardI,(180+80*i,100));
+        Screen.blit(Loss,(330,270));
+        Screen.blit(Hint1,(150,200));
     elif StateFlag == 6:
         for i in range(len(CS.data)):
             CardI = CardImage[CS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,350));
+            Screen.blit(CardI,(180+80*i,350));
         for i in range(len(DCS.data)):
             CardI = CardImage[DCS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,100));
-        Screen.blit(Bust,(350,100));
-        Screen.blit(Hint1,(100,200));
+            Screen.blit(CardI,(180+80*i,100));
+        Screen.blit(Bust,(330,270));
+        Screen.blit(Hint1,(150,200));
     elif StateFlag == 7:
         for i in range(len(CS.data)):
             CardI = CardImage[CS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,350));
+            Screen.blit(CardI,(180+80*i,350));
         for i in range(len(DCS.data)):
             CardI = CardImage[DCS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,100));
-        Screen.blit(BlackJack,(350,100));
-        Screen.blit(Hint1,(100,200));
-    elif StateFlag == 8:
-        for i in range(len(CS.data)):
-            CardI = CardImage[CS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,350));
-        for i in range(len(DCS.data)):
-            CardI = CardImage[DCS.data[i].hashfunction()];
-            Screen.blit(CardI,(180+100*i,100));
-        Screen.blit(Loss,(350,100));
-        Screen.blit(Hint1,(100,200));
+            Screen.blit(CardI,(180+80*i,100));
+        Screen.blit(BlackJack,(330,270));
+        Screen.blit(Hint1,(150,200));
 
-    Screen.blit(MoneyImage,(700,30));
+
+    Screen.blit(MoneyImage,(700,10));
+    Screen.blit(BetImage,(700,50));
 
     Clock.tick(20);
 

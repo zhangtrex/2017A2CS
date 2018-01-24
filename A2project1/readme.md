@@ -61,5 +61,12 @@ def InitializeCardDeckImage(): # return a dictionary with all images of cards
 
 ```
 
+### P.S.
+### Instruction of Packaging the Program
+#### 1.Download and Install PyInstaller
+#### 2.Find the location of PyInstaller.exe
+#### 3.Use cmd, locate the file, 
+
+
 ###### if someone wants to access to Kevin's repository:
 ###### https://github.com/KevinYoung23
