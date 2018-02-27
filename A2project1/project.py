@@ -15,7 +15,7 @@ import sys
 from pygame.locals import *
 from GameObjects import *
 
-# odules
+# modules
 
 def DeleteElement(List, Index): # use index in a list to remove the element
     List2 = [];
@@ -74,7 +74,7 @@ pygame.init()
 
 pygame.display.set_caption('blackjack');
 
-Screen = pygame.display.set_mode((800,600),0,32);
+Screen = pygame.display.set_mode((800,600),FULLSCREEN,32);
 
 Background = pygame.image.load(BackgroundImageFilename).convert();
 
@@ -255,9 +255,7 @@ while True:
         for i in range(len(CS.data)):
             CardI = CardImage[CS.data[i].hashfunction()];
             Screen.blit(CardI,(180+80*i,350));
-        CardBackI = CardImage['Back'];
-        Screen.blit(CardBackI,(180,100));
-        for i in range(1,len(DCS.data),1):
+        for i in range(len(DCS.data),):
             CardI = CardImage[DCS.data[i].hashfunction()];
             Screen.blit(CardI,(180+80*i,100));
     elif StateFlag == 3:
