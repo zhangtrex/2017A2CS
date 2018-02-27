@@ -28,14 +28,16 @@ def add(n,y,o):
             break
 
 def save():
-    file = open('CarData.DAT','rb+');
+    f = open('CarData.dat','ab');
+    f.close();
+    file = open('CarData.dat','rb+');
     for i in range(100):
         pickle.dump(Set[i],file);
     file.close();
 
 def load():
-    file = open('CarData.DAT','rb');
+    file = open('CarData.dat','rb');
     Set1 = [];
-    for i in range(5):
+    for i in range(10):
          Set1.append(pickle.load(file));
     print(Set1)
