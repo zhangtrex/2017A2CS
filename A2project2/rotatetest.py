@@ -6,7 +6,7 @@ from math import *
 from pygame.locals import *
 
 pygame.init();
-screen = pygame.display.set_mode((1280,800),0,32);
+screen = pygame.display.set_mode((1280,800),FULLSCREEN,32);
 Clock = pygame.time.Clock();
 wheel = pygame.image.load('wheel.png').convert_alpha();
 board = pygame.image.load('board.png').convert();
@@ -55,6 +55,7 @@ check = 0;
 wincheck = 0;
 winnum = -1;
 chippos = [];
+winnumprint = -1;
 
 t = 0; # t for tick
 
@@ -101,14 +102,15 @@ while True:
                 Money = Money - BetMoney;
                 chippos.append((80+bx*80,75+50*by));
 
-    if wincheck == 60:
+    if wincheck == 1:
         if 36 - block <= 18:
             winnum = n[17 - (36 - block)];
         else:
             winnum = n[54 - (36 - block)];
         print(winnum);
+        winnumprint = winnum;
 
-    if wincheck > 360 and PressMouseCount == 1:
+    if wincheck >= 60 and PressMouseCount == 1:
         wav = 0;
         waa = -3;
         baa = -0.4 / fps
@@ -129,6 +131,7 @@ while True:
         BetMultiple = [0 for i in range(49)];
         bet = 1;
         t = 0;
+        winnumprint = -1;
 
     if winnum != -1:
         if winnum == 0:
@@ -173,7 +176,7 @@ while True:
         v = abs(v)*random.randint(50,90)/100;
 
     avd = - fps * wav / 360 * 2 * pi + bav * fps;
-    if avd <= 1.1 and check == 0 and r <= 260:
+    if avd <= 2 and check == 0 and r <= 260:
         for i in range(37):
             angs1[i] = (angs[i] + 2*pi/360*wad)%(2*pi) - (bad + 0.0785)%(2*pi);
             if 0 <= angs1[i] < 2*pi/37:
@@ -181,23 +184,28 @@ while True:
                 check = 1;
                 print('yes')
 
-    if 216 <= r <= 260 and avd > 1.5:
+    if check == 1:
+        if (block * 2*pi/37 + 2*pi/360*wad)%(2*pi) - (bad+0.02)%(2*pi) <= 0:
+            baa = waa / 360 * 2*pi;
+            bav = wav / 360 * 2*pi;
+            bet = 0;
+            wincheck += 1;
+#        print((block * 2*pi/37 + 2*pi/360*wad)%(2*pi) - (bad)%(2*pi))
+
+    avd = - fps * wav / 360 * 2 * pi + bav * fps;
+    if 216 <= r <= 260 and avd > 1.5 and check == 0:
         for i in range(37):
             angs2[i] = bad%(2*pi) - (angs[i] + 2*pi/360*wad)%(2*pi);
             if angs2[i] >= 0:
                 angn[i] = True;
             else:
                 angn[i] = False;
+        for i in range(37):
             if not angl[i] and angn[i]:
-                bav = bav - avd * random.randint(30,70)/1000 / fps;
+                bav = bav - avd * random.randint(30,90)/1000 / fps;
+                break
+        for i in range(37):
             angl[i] = angn[i];
-                
-    if check == 1:
-        if (block * 2*pi/37 + 2*pi/360*wad)%(2*pi) - (bad)%(2*pi) <= 0:
-            baa = waa / 360 * 2*pi;
-            bav = wav / 360 * 2*pi;
-            bet = 0;
-            wincheck += 1;
 
     wheelr = pygame.transform.rotate(wheel,-wad);
     xw = 400 - wheelr.get_width()/2;
@@ -224,7 +232,9 @@ while True:
         screen.blit(chipimage,(c[0]+800-15,c[1]-15));
     screen.blit(xf,(0,10));
     screen.blit(yf,(0,50));
-    if wincheck > 360:
+    if winnumprint != -1:
+        screen.blit(f.render('win number is '+str(winnumprint),False,(255,255,255)),(600,10))
+    if wincheck >= 60:
         screen.blit(nextrun,(300,200))
     screen.blit(moneyimage,(0,90))
     pygame.display.update();
