@@ -74,7 +74,7 @@ pygame.init()
 
 pygame.display.set_caption('blackjack');
 
-Screen = pygame.display.set_mode((800,600),FULLSCREEN,32);
+Screen = pygame.display.set_mode((800,600),0,32);
 
 Background = pygame.image.load(BackgroundImageFilename).convert();
 
