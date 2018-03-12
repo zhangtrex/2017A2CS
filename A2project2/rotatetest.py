@@ -1,7 +1,12 @@
+# Roulette game
+# programmed by Rex
+# special guest: Kevin Yang
+
 import pygame
 import math
 import sys
 import random
+
 from math import *
 from pygame.locals import *
 
@@ -15,26 +20,26 @@ chipimage = pygame.image.load('chip.png').convert_alpha();
 ball = pygame.image.load('ball.png').convert_alpha();
 f = pygame.font.SysFont('arial',32);
 f1 = pygame.font.SysFont('arial',40);
-
-nextrun = f1.render('press left mouse to start another game',False,(255,255,255));
+f2 = pygame.font.SysFont('arial',60);
+nextrun = f2.render('press left mouse to start another game',False,(255,255,255));
 
 n = [1,20,14,31,9,22,18,29,7,28,12,35,3,26,0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33];
 
 fps = 60;
-# degree 
-wav = 0;
-waa = -3;
-wad = 0;
+# degree
+wav = 0; # wheel angular velocity
+waa = -3; # wheel angular acceleration
+wad = 0; # wheel angular displacement
 # radian
-bav = random.randint(500,800)/100 / fps;
-baa = -0.4 / fps;
-bad = 0;
+bav = random.randint(500,800)/100 / fps; # ball angular velocity
+baa = -0.4 / fps; # ball angular acceleration
+bad = 0; # ball angular displacement
 # milimeter
-r = 364;
-v = 0;
-a = 0;
+r = 364; # radius
+v = 0; # vertical velocity
+a = 0; # vertical acceleration
 
-PressMouseCount = 0;
+PressMouseCount = 0; # if left mouse pressed, it increment 1
 
 BetSet = [0 for i in range(49)];
 BetMultiple = [0 for i in range(49)];
@@ -59,9 +64,6 @@ winnumprint = -1;
 
 t = 0; # t for tick
 
-# coefficient of friction: 0.03-0.04
-# stop velocity 0.28m/s (1.12 rad for 0.25m radian)
-
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -72,12 +74,14 @@ while True:
     
     PressMouse = pygame.mouse.get_pressed();
     x,y = pygame.mouse.get_pos();
-    
+
+    # press mouse for a long time only count for one press
     if PressMouse[0] == True:
         PressMouseCount = PressMouseCount + 1;
     else:
         PressMouseCount = 0;
 
+    # find the position player bet on
     if bet == 1 and PressMouseCount == 1:
         bx = (x - 840)//80;
         by = (y - 50)//50;
@@ -110,6 +114,7 @@ while True:
         print(winnum);
         winnumprint = winnum;
 
+    # restart another game, reinitialize variables
     if wincheck >= 60 and PressMouseCount == 1:
         wav = 0;
         waa = -3;
@@ -133,6 +138,7 @@ while True:
         t = 0;
         winnumprint = -1;
 
+    # add the money the player win on his/her bet
     if winnum != -1:
         if winnum == 0:
             BetMultiple[0] = 36;
@@ -155,7 +161,8 @@ while True:
         for i in range(49):
             Money += BetMultiple[i]*BetSet[i];
         winnum = -1;
-            
+
+    # calculate movement of the wheel
     wav = wav + waa / fps;
     wad = wad + wav;
     if wav >= 0:
@@ -164,25 +171,30 @@ while True:
     elif t / fps >= 1:
         waa = 0.1;
 
+    # calculate movement of the ball
     bav = bav + baa / fps;
     bad = bad + bav;
+    # when the ball has low angular velocity, it move to the center of the wheel
     if bav < 2.64 / fps:
         a = -254 / fps;
         v = v + a;
         r = r + v / fps;
 
+    # calculate velocity of the ball when it bounces with the inner wall 
     if r < 216:
         r = 216;
         v = abs(v)*random.randint(50,90)/100;
-
+    
+    # avd is angular velocity difference between the wheel and the ball
     avd = - fps * wav / 360 * 2 * pi + bav * fps;
-    if avd <= 2 and check == 0 and r <= 260:
+    # find which position the ball will be stopped by the wheel
+    if avd <= 1.5 and check == 0 and r <= 260:
         for i in range(37):
             angs1[i] = (angs[i] + 2*pi/360*wad)%(2*pi) - (bad + 0.0785)%(2*pi);
             if 0 <= angs1[i] < 2*pi/37:
                 block = i;
                 check = 1;
-                print('yes')
+                print('yes');
 
     if check == 1:
         if (block * 2*pi/37 + 2*pi/360*wad)%(2*pi) - (bad+0.02)%(2*pi) <= 0:
@@ -221,8 +233,6 @@ while True:
     yf = f.render('y '+str(y),False,(255,255,255));
     moneyimage = f.render('Money: '+str(Money),False,(255,255,255));
     
-    
-    
     t = t + 1;
     screen.blit(board,(0,0));
     screen.blit(board1,(800,0));
@@ -235,7 +245,7 @@ while True:
     if winnumprint != -1:
         screen.blit(f.render('win number is '+str(winnumprint),False,(255,255,255)),(600,10))
     if wincheck >= 60:
-        screen.blit(nextrun,(300,200))
+        screen.blit(nextrun,(200,200))
     screen.blit(moneyimage,(0,90))
     pygame.display.update();
     Clock.tick(fps);
