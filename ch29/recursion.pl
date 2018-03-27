@@ -33,7 +33,17 @@ triangle(X,Y) :-
   Y is Z + M + 1.
 
 sumDigits(0,0).
+sumDigits(X,Y) :-
+  A is X div 10,
+  B is X mod 10,
+  sumDigits(A,Z),
+  Y is B + Z.
 
-
-
-  
+count7(0,0).
+count7(X,Y) :-
+  A is X div 10,
+  B is X mod 10,
+  C is B div 7,
+  D is B div 8,
+  count7(A,Z),
+  Y is Z + C - D.

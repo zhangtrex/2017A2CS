@@ -50,6 +50,11 @@ daughter(X,Y) :-
 	parent(Y,X),
 	female(X).
 
+ancester(X,Y) :-
+  parent(X,Y).
+ancester(X,Y) :-
+  
+
 
 
 
