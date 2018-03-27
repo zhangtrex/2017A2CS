@@ -53,6 +53,8 @@ daughter(X,Y) :-
 ancester(X,Y) :-
   parent(X,Y).
 ancester(X,Y) :-
+  parent(Z,Y),
+  ancester(X,Z).
   
 
 
